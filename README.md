@@ -25,4 +25,4 @@ This project implements an **automated health orchestrator** that:
 ---
 
 Command to run:
-**python python health_orchestrator.py**
+**python health_orchestrator.py**
