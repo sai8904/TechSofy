@@ -1,0 +1,40 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Health Orchestrator Dashboard",
+    "tags": ["health", "orchestrator", "microservices"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Service Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "health_orchestrator_services_healthy",
+            "legendFormat": "Healthy Services"
+          }
+        ]
+      },
+      {
+        "title": "Prediction Accuracy",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "health_orchestrator_ml_accuracy",
+            "legendFormat": "ML Model Accuracy"
+          }
+        ]
+      },
+      {
+        "title": "Healing Actions",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "health_orchestrator_healing_actions_total",
+            "legendFormat": "Total Actions"
+          }
+        ]
+      }
+    ]
+  }
+}

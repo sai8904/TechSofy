@@ -1,0 +1,78 @@
+# Health Orchestrator Configuration
+
+# Metrics Collection
+metrics:
+  collection_interval: 30  # seconds
+  retention_period: 7      # days
+  prometheus_url: "http://localhost:9090"
+  custom_endpoints:
+    - name: "service-health"
+      url: "http://localhost:8081/health"
+      interval: 15
+
+# Health Analysis
+health_analysis:
+  thresholds:
+    cpu_warning: 70
+    cpu_critical: 85
+    memory_warning: 75
+    memory_critical: 90
+    error_rate_warning: 5
+    error_rate_critical: 10
+    response_time_warning: 500
+    response_time_critical: 1000
+  
+  ml_model:
+    enabled: true
+    model_path: "models/health_model.pkl"
+    retrain_interval: 24  # hours
+
+# Orchestration
+orchestration:
+  interval: 60  # seconds
+  dry_run: true  # Set to false for production
+  max_concurrent_actions: 3
+  action_timeout: 300  # seconds
+  
+  kubernetes:
+    config_path: "~/.kube/config"
+    namespace: "default"
+  
+  docker:
+    socket_path: "/var/run/docker.sock"
+
+# Dashboard
+dashboard:
+  port: 8080
+  host: "0.0.0.0"
+  enable_auth: false
+  refresh_interval: 30  # seconds
+
+# Alerting
+alerting:
+  enabled: true
+  webhook_url: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+  email_smtp:
+    server: "smtp.gmail.com"
+    port: 587
+    username: "your-email@gmail.com"
+    password: "your-app-password"
+  
+  rules:
+    - name: "service_down"
+      condition: "status == 'unhealthy'"
+      severity: "critical"
+      cooldown: 300  # seconds
+    
+    - name: "high_error_rate"
+      condition: "error_rate > 10"
+      severity: "warning"
+      cooldown: 600
+
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/health_orchestrator.log"
+  max_size: "100MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

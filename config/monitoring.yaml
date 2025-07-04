@@ -1,0 +1,52 @@
+monitoring:
+  # System metrics
+  system_metrics:
+    enabled: true
+    interval: 30
+    metrics:
+      - cpu_usage
+      - memory_usage
+      - disk_usage
+      - network_io
+      - process_count
+  
+  # Application metrics
+  application_metrics:
+    enabled: true
+    interval: 15
+    metrics:
+      - request_count
+      - request_duration
+      - error_rate
+      - active_connections
+      - queue_size
+  
+  # Business metrics
+  business_metrics:
+    enabled: true
+    interval: 60
+    metrics:
+      - services_monitored
+      - healing_actions_performed
+      - prediction_accuracy
+      - uptime_percentage
+  
+  # Alerts
+  alerts:
+    - name: "high_memory_usage"
+      condition: "memory_usage > 85"
+      severity: "warning"
+      actions: ["slack", "email"]
+      cooldown: 300
+    
+    - name: "service_prediction_failure"
+      condition: "prediction_accuracy < 0.7"
+      severity: "critical"
+      actions: ["slack", "email", "pagerduty"]
+      cooldown: 600
+    
+    - name: "healing_action_failed"
+      condition: "healing_action_success_rate < 0.8"
+      severity: "warning"
+      actions: ["slack"]
+      cooldown: 900

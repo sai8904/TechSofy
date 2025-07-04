@@ -1,0 +1,87 @@
+scaling:
+  # Horizontal Pod Autoscaler
+  hpa:
+    enabled: true
+    min_replicas: 2
+    max_replicas: 10
+    target_cpu_utilization: 70
+    target_memory_utilization: 80
+    scale_up_stabilization: 60    # seconds
+    scale_down_stabilization: 300 # seconds
+  
+  # Vertical Pod Autoscaler
+  vpa:
+    enabled: false
+    update_mode: "Auto"  # Options: Off, Initial, Auto
+    resource_policy:
+      min_allowed:
+        cpu: "100m"
+        memory: "128Mi"
+      max_allowed:
+        cpu: "2"
+        memory: "4Gi"
+  
+  # Custom scaling rules
+  custom_scaling:
+    enabled: true
+    rules:
+      - name: "queue_length_scaling"
+        condition: "avg(queue_length) > 100"
+        action: "scale_up"
+        replicas: 1
+      - name: "error_rate_scaling"
+        condition: "avg(error_rate) > 0.1"
+        action: "scale_up"
+        replicas: 2
+EOF
+
+# Create HPA manifest
+cat > kubernetes/hpa.yaml << EOF
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: health-orchestrator-hpa
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: health-orchestrator
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: health_orchestrator_queue_length
+      target:
+        type: AverageValue
+        averageValue: "100"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60

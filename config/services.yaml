@@ -1,0 +1,31 @@
+# Service definitions and dependencies
+services:
+  # Critical services that should be prioritized
+  critical_services:
+    - "payment-service"
+    - "auth-service"
+    - "database-service"
+
+  # Service dependencies
+  dependencies:
+    "order-service":
+      - "payment-service"
+      - "inventory-service"
+    "checkout-service":
+      - "order-service"
+      - "payment-service"
+      - "shipping-service"
+    "user-service":
+      - "auth-service"
+      - "profile-service"
+
+  # Service-specific thresholds (override global defaults)
+  thresholds:
+    "payment-service":
+      cpu_critical: 80.0
+      memory_critical: 80.0
+      error_rate_critical: 5.0
+    "database-service":
+      cpu_critical: 70.0
+      memory_critical: 75.0
+      response_time_critical: 1000.0
