@@ -1,4 +1,4 @@
-# 🚑 Container and Microservices Health Orchestrator
+# Container and Microservices Health Orchestrator
 
 ## 💡 Problem Statement
 
